@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -78,8 +77,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setPassword(encodePassword(password));
         user.setActive(true);
         user.setNotLocked(true);
-        user.setRole(ROLE_USER.name());
-        user.setAuthorities(ROLE_USER.getAuthorities());
+        user.setRole(ROLE_ADMIN.name());
+        user.setAuthorities(ROLE_ADMIN.getAuthorities());
         userRepository.save(user);
         LOGGER.info("New user password: {}",password);
         return user;
