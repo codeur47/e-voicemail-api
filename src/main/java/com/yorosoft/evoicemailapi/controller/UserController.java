@@ -1,5 +1,7 @@
 package com.yorosoft.evoicemailapi.controller;
 
+import com.yorosoft.evoicemailapi.dto.UserRequest;
+import com.yorosoft.evoicemailapi.dto.UserResponse;
 import com.yorosoft.evoicemailapi.exception.ExceptionHandling;
 import com.yorosoft.evoicemailapi.exception.domain.UserNotFoundException;
 import com.yorosoft.evoicemailapi.exception.domain.UsernameExistException;
@@ -54,13 +56,8 @@ public class UserController extends ExceptionHandling {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<AppUser> addNewUser(@RequestParam("firstName") String firstName,
-                                           @RequestParam("lastName") String lastName,
-                                           @RequestParam("username") String username,
-                                           @RequestParam("role") String role,
-                                           @RequestParam("isActive") String isActive,
-                                           @RequestParam("isNonLocked") String isNonLocked) throws UserNotFoundException, UsernameExistException {
-        AppUser newUser = userService.addNewUser(firstName, lastName, username, role, Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive));
+    public ResponseEntity<AppUser> addNewUser(@RequestBody UserRequest userRequest) throws UserNotFoundException, UsernameExistException {
+        AppUser newUser = userService.addNewUser(userRequest.getFirstName(), userRequest.getLastName(), userRequest.getUsername(), userRequest.getRole(), userRequest.isNotLocked(), userRequest.isActive(),userRequest.getSupId());
         return new ResponseEntity<>(newUser, OK);
     }
 
@@ -83,8 +80,8 @@ public class UserController extends ExceptionHandling {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<AppUser>> getAllUsers() {
-        List<AppUser> users = userService.getUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> users = userService.getUserResponse();
         return new ResponseEntity<>(users, OK);
     }
 

@@ -1,5 +1,7 @@
 package com.yorosoft.evoicemailapi.service.impl;
 
+import com.yorosoft.evoicemailapi.dto.SimpleUserResponse;
+import com.yorosoft.evoicemailapi.dto.UserResponse;
 import com.yorosoft.evoicemailapi.enumeration.Role;
 import com.yorosoft.evoicemailapi.exception.domain.UserNotFoundException;
 import com.yorosoft.evoicemailapi.exception.domain.UsernameExistException;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +33,6 @@ import static com.yorosoft.evoicemailapi.constant.UserImplConstant.*;
 
 import static com.yorosoft.evoicemailapi.enumeration.Role.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-
 @Service
 @Transactional
 @Qualifier("userDetailsService")
@@ -85,7 +88,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public AppUser addNewUser(String firstName, String lastName, String username, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, UsernameExistException {
+    public AppUser addNewUser(String firstName, String lastName, String username, String role, boolean isNonLocked, boolean isActive, String supId) throws UserNotFoundException, UsernameExistException {
         validateNewUsername(EMPTY, username);
         AppUser user = new AppUser();
         String password = generatePassword();
@@ -99,6 +102,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setNotLocked(isNonLocked);
         user.setRole(getRoleEnumName(role).name());
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
+        if (StringUtils.isNotBlank(supId))
+            user.setSupId(supId);
         userRepository.save(user);
         LOGGER.info("New user password: {}",password);
         return user;
@@ -138,9 +143,56 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findAll();
     }
 
+
+    @Override
+    public List<UserResponse> getUserResponse() {
+        List<UserResponse> userResponses = new ArrayList<>();
+        List<AppUser> appUsers = getUsers();
+        appUsers.forEach(appUser -> {
+            UserResponse userResponse =  UserResponse.builder()
+                    .userId(appUser.getUserId())
+                    .firstName(appUser.getFirstName())
+                    .lastName(appUser.getLastName())
+                    .username(appUser.getUsername())
+                    .lastLoginDate(appUser.getLastLoginDate())
+                    .joinDate(appUser.getJoinDate())
+                    .role(appUser.getRole())
+                    .authorities(appUser.getAuthorities())
+                    .supId(appUser.getSupId())
+                    .isActive(appUser.isActive())
+                    .isNotLocked(appUser.isNotLocked())
+                    .build();
+
+            if (userResponse.getRole().equals(ROLE_USER.name())){
+                List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
+                simpleUserResponses.add(findSimpleUserResponseByUserId(userResponse.getUserId()));
+                userResponse.setSimpleUserResponses(simpleUserResponses);
+            }else {
+                userResponse.setSimpleUserResponses(findSimpleUserResponsesByUserId(userResponse.getUserId()));
+            }
+            userResponses.add(userResponse);
+        });
+        return userResponses;
+    }
+
+    @Override
+    public SimpleUserResponse findSimpleUserResponseByUserId(String userId) {
+        AppUser appUser = findUserByUserId(userId);
+        new SimpleUserResponse();
+        return SimpleUserResponse.builder()
+                .firstName(appUser.getFirstName())
+                .lastName(appUser.getLastName())
+                .build();
+    }
+
     @Override
     public AppUser findUserByUsername(String username) {
         return userRepository.findAppUserByUsername(username);
+    }
+
+    @Override
+    public AppUser findUserByUserId(String userId) {
+        return userRepository.findAppUserByUserId(userId);
     }
 
     @Override
@@ -190,6 +242,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             }
             return null;
         }
+    }
+
+    private List<SimpleUserResponse> findSimpleUserResponsesByUserId(String userId) {
+        List<AppUser> appUsers = userRepository.findAllByUserId(userId);
+        List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
+        appUsers.forEach(appUser -> {
+            SimpleUserResponse simpleUserResponse = SimpleUserResponse.builder()
+                    .lastName(appUser.getLastName())
+                    .firstName(appUser.getFirstName())
+                    .build();
+            simpleUserResponses.add(simpleUserResponse);
+        });
+        return  simpleUserResponses;
     }
 
 }
