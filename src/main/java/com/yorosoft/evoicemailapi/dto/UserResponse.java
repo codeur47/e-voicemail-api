@@ -1,14 +1,12 @@
 package com.yorosoft.evoicemailapi.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.util.Collection;
 import java.util.Date;
 
-@Data
-@Builder
+@Getter
+@Setter
 @RequiredArgsConstructor
 public class UserResponse {
     private String userId;

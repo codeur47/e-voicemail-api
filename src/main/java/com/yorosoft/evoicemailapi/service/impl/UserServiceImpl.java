@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -149,26 +148,33 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         List<UserResponse> userResponses = new ArrayList<>();
         List<AppUser> appUsers = getUsers();
         appUsers.forEach(appUser -> {
-            UserResponse userResponse =  UserResponse.builder()
-                    .userId(appUser.getUserId())
-                    .firstName(appUser.getFirstName())
-                    .lastName(appUser.getLastName())
-                    .username(appUser.getUsername())
-                    .lastLoginDate(appUser.getLastLoginDate())
-                    .joinDate(appUser.getJoinDate())
-                    .role(appUser.getRole())
-                    .authorities(appUser.getAuthorities())
-                    .supId(appUser.getSupId())
-                    .isActive(appUser.isActive())
-                    .isNotLocked(appUser.isNotLocked())
-                    .build();
-
-            if (userResponse.getRole().equals(ROLE_USER.name())){
+            UserResponse userResponse = new UserResponse();
+            userResponse.setUserId(appUser.getUserId());
+            userResponse.setFirstName(appUser.getFirstName());
+            userResponse.setLastName(appUser.getLastName());
+            userResponse.setUsername(appUser.getUsername());
+            userResponse.setLastLoginDate(appUser.getLastLoginDate());
+            userResponse.setJoinDate(appUser.getJoinDate());
+            userResponse.setRole(appUser.getRole());
+            userResponse.setAuthorities(appUser.getAuthorities());
+            userResponse.setSupId(appUser.getSupId());
+            userResponse.setActive(appUser.isActive());
+            userResponse.setNotLocked(appUser.isNotLocked());
+            if (appUser.getRole().equals(ROLE_USER.name())){
                 List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
-                simpleUserResponses.add(findSimpleUserResponseByUserId(userResponse.getUserId()));
+                simpleUserResponses.add(findSimpleUserResponseByUserId(userResponse.getSupId()));
                 userResponse.setSimpleUserResponses(simpleUserResponses);
-            }else {
-                userResponse.setSimpleUserResponses(findSimpleUserResponsesByUserId(userResponse.getUserId()));
+            }
+            if(appUser.getRole().equals(ROLE_SUPERVISOR.name())) {
+                List<AppUser> appUserList = userRepository.findAllAppUsersBySupId(appUser.getUserId());
+                List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
+                appUserList.forEach(appUser1 -> {
+                    SimpleUserResponse simpleUserResponse = new SimpleUserResponse();
+                    simpleUserResponse.setFirstName(appUser1.getFirstName());
+                    simpleUserResponse.setLastName(appUser1.getLastName());
+                    simpleUserResponses.add(simpleUserResponse);
+                });
+                userResponse.setSimpleUserResponses(simpleUserResponses);
             }
             userResponses.add(userResponse);
         });
@@ -178,11 +184,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public SimpleUserResponse findSimpleUserResponseByUserId(String userId) {
         AppUser appUser = findUserByUserId(userId);
-        new SimpleUserResponse();
-        return SimpleUserResponse.builder()
-                .firstName(appUser.getFirstName())
-                .lastName(appUser.getLastName())
-                .build();
+        SimpleUserResponse simpleUserResponse = new SimpleUserResponse();
+        simpleUserResponse.setLastName(appUser.getLastName());
+        simpleUserResponse.setFirstName(appUser.getFirstName());
+        return simpleUserResponse;
     }
 
     @Override
@@ -248,10 +253,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         List<AppUser> appUsers = userRepository.findAllByUserId(userId);
         List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
         appUsers.forEach(appUser -> {
-            SimpleUserResponse simpleUserResponse = SimpleUserResponse.builder()
-                    .lastName(appUser.getLastName())
-                    .firstName(appUser.getFirstName())
-                    .build();
+            SimpleUserResponse simpleUserResponse = new SimpleUserResponse();
+            simpleUserResponse.setLastName(appUser.getLastName());
+            simpleUserResponse.setFirstName(appUser.getFirstName());
             simpleUserResponses.add(simpleUserResponse);
         });
         return  simpleUserResponses;

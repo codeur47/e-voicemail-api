@@ -16,7 +16,10 @@ public class LoadDatabase {
     CommandLineRunner initDatabase(UserService userService) {
         return args -> {
             LOGGER.info("***************BEGIN ADMIN USER CREATION***************");
-            userService.register("Ange Carmel","YORO", "codeur47");
+
+            if (userService.findUserByUsername("codeur47") == null)
+                userService.register("Ange Carmel","YORO", "codeur47");
+
             LOGGER.info("***************END ADMIN USER CREATION***************");
         };
     }
