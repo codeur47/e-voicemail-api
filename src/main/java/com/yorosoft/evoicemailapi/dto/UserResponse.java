@@ -21,4 +21,5 @@ public class UserResponse {
     private boolean isActive;
     private boolean isNotLocked;
     private Collection<SimpleUserResponse> simpleUserResponses;
+    private Integer themeId;
 }

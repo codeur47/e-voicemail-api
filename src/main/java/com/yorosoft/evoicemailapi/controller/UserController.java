@@ -51,13 +51,13 @@ public class UserController extends ExceptionHandling {
 
     @PostMapping("/register")
     public ResponseEntity<AppUser> register(@RequestBody AppUser user) throws UserNotFoundException, UsernameExistException {
-        AppUser newUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername());
+        AppUser newUser = userService.register(user.getFirstName(), user.getLastName(), user.getUsername(), user.getThemeId());
         return new ResponseEntity<>(newUser, OK);
     }
 
     @PostMapping("/add")
     public ResponseEntity<AppUser> addNewUser(@RequestBody UserRequest userRequest) throws UserNotFoundException, UsernameExistException {
-        AppUser newUser = userService.addNewUser(userRequest.getFirstName(), userRequest.getLastName(), userRequest.getUsername(), userRequest.getRole(), userRequest.isNotLocked(), userRequest.isActive(),userRequest.getSupId());
+        AppUser newUser = userService.addNewUser(userRequest.getFirstName(), userRequest.getLastName(), userRequest.getUsername(), userRequest.getRole(), userRequest.isNotLocked(), userRequest.isActive(),userRequest.getSupId(), userRequest.getThemeId());
         return new ResponseEntity<>(newUser, OK);
     }
 

@@ -8,4 +8,5 @@ import lombok.*;
 public class SimpleUserResponse {
     private String firstName;
     private String lastName;
+    private Integer themeId;
 }

@@ -27,4 +27,5 @@ public class AppUser {
     private String supId;
     private boolean isActive;
     private boolean isNotLocked;
+    private Integer themeId;
 }

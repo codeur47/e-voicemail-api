@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public AppUser register(String firstName, String lastName, String username) throws UserNotFoundException, UsernameExistException {
+    public AppUser register(String firstName, String lastName, String username, Integer themeId) throws UserNotFoundException, UsernameExistException {
         validateNewUsername(EMPTY, username);
         AppUser user = new AppUser();
         user.setUserId(generateUserId());
@@ -81,13 +81,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setNotLocked(true);
         user.setRole(ROLE_ADMIN.name());
         user.setAuthorities(ROLE_ADMIN.getAuthorities());
+        user.setThemeId(themeId);
         userRepository.save(user);
         LOGGER.info("New user password: {}",password);
         return user;
     }
 
     @Override
-    public AppUser addNewUser(String firstName, String lastName, String username, String role, boolean isNonLocked, boolean isActive, String supId) throws UserNotFoundException, UsernameExistException {
+    public AppUser addNewUser(String firstName, String lastName, String username, String role, boolean isNonLocked, boolean isActive, String supId, Integer themeId) throws UserNotFoundException, UsernameExistException {
         validateNewUsername(EMPTY, username);
         AppUser user = new AppUser();
         String password = generatePassword();
@@ -103,6 +104,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setAuthorities(getRoleEnumName(role).getAuthorities());
         if (StringUtils.isNotBlank(supId))
             user.setSupId(supId);
+        user.setThemeId(themeId);
         userRepository.save(user);
         LOGGER.info("New user password: {}",password);
         return user;
@@ -160,6 +162,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             userResponse.setSupId(appUser.getSupId());
             userResponse.setActive(appUser.isActive());
             userResponse.setNotLocked(appUser.isNotLocked());
+            userResponse.setThemeId(appUser.getThemeId());
             if (appUser.getRole().equals(ROLE_USER.name())){
                 List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
                 simpleUserResponses.add(findSimpleUserResponseByUserId(userResponse.getSupId()));
@@ -172,6 +175,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     SimpleUserResponse simpleUserResponse = new SimpleUserResponse();
                     simpleUserResponse.setFirstName(appUser1.getFirstName());
                     simpleUserResponse.setLastName(appUser1.getLastName());
+                    simpleUserResponse.setThemeId(appUser1.getThemeId());
                     simpleUserResponses.add(simpleUserResponse);
                 });
                 userResponse.setSimpleUserResponses(simpleUserResponses);
@@ -187,6 +191,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         SimpleUserResponse simpleUserResponse = new SimpleUserResponse();
         simpleUserResponse.setLastName(appUser.getLastName());
         simpleUserResponse.setFirstName(appUser.getFirstName());
+        simpleUserResponse.setThemeId(appUser.getThemeId());
         return simpleUserResponse;
     }
 
@@ -256,6 +261,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             SimpleUserResponse simpleUserResponse = new SimpleUserResponse();
             simpleUserResponse.setLastName(appUser.getLastName());
             simpleUserResponse.setFirstName(appUser.getFirstName());
+            simpleUserResponse.setThemeId(appUser.getThemeId());
             simpleUserResponses.add(simpleUserResponse);
         });
         return  simpleUserResponses;

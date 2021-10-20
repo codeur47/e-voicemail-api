@@ -21,4 +21,5 @@ public class AppUserDTO {
     private String[] idUserSupervised;
     private boolean isActive;
     private boolean isNotLocked;
+    private Integer themeId;
 }

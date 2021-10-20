@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface UserService {
 
-    AppUser register(String firstName, String lastName, String username) throws UserNotFoundException, UsernameExistException;
+    AppUser register(String firstName, String lastName, String username, Integer themeId) throws UserNotFoundException, UsernameExistException;
 
     List<AppUser> getUsers();
 
@@ -22,7 +22,7 @@ public interface UserService {
 
     AppUser findUserByUserId(String userId);
 
-    AppUser addNewUser(String firstName, String lastName, String username, String role, boolean isNonLocked, boolean isActive, String supId) throws UserNotFoundException, UsernameExistException;
+    AppUser addNewUser(String firstName, String lastName, String username, String role, boolean isNonLocked, boolean isActive, String supId, Integer themeId) throws UserNotFoundException, UsernameExistException;
 
     AppUser updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, UsernameExistException;
 

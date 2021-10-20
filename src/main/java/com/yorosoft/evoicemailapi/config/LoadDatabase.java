@@ -18,7 +18,7 @@ public class LoadDatabase {
             LOGGER.info("***************BEGIN ADMIN USER CREATION***************");
 
             if (userService.findUserByUsername("codeur47") == null)
-                userService.register("Ange Carmel","YORO", "codeur47");
+                userService.register("Ange Carmel","YORO", "codeur47",1);
 
             LOGGER.info("***************END ADMIN USER CREATION***************");
         };

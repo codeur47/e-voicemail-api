@@ -13,4 +13,5 @@ public class UserRequest {
     private boolean isActive;
     private boolean isNotLocked;
     private String supId;
+    private Integer themeId;
 }
