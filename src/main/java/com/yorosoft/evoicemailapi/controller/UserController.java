@@ -62,14 +62,8 @@ public class UserController extends ExceptionHandling {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<AppUser> update(@RequestParam("currentUsername") String currentUsername,
-                                       @RequestParam("firstName") String firstName,
-                                       @RequestParam("lastName") String lastName,
-                                       @RequestParam("username") String username,
-                                       @RequestParam("role") String role,
-                                       @RequestParam("isActive") String isActive,
-                                       @RequestParam("isNonLocked") String isNonLocked) throws UserNotFoundException, UsernameExistException {
-        AppUser updatedUser = userService.updateUser(currentUsername, firstName, lastName, username, role, Boolean.parseBoolean(isNonLocked), Boolean.parseBoolean(isActive));
+    public ResponseEntity<AppUser> update(@RequestBody UserRequest userRequest) throws UserNotFoundException, UsernameExistException {
+        AppUser updatedUser = userService.updateUser(userRequest.getOldUsername(), userRequest.getFirstName(), userRequest.getLastName(), userRequest.getUsername(), userRequest.getRole(), userRequest.isNotLocked(), userRequest.isActive(),userRequest.getSupId());
         return new ResponseEntity<>(updatedUser, OK);
     }
 

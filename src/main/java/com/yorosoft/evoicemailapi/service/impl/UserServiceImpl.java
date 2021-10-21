@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public AppUser updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String role, boolean isNonLocked, boolean isActive) throws UserNotFoundException, UsernameExistException {
+    public AppUser updateUser(String currentUsername, String newFirstName, String newLastName, String newUsername, String role, boolean isNonLocked, boolean isActive, String supId) throws UserNotFoundException, UsernameExistException {
         AppUser currentUser = validateNewUsername(currentUsername, newUsername);
         if (currentUser != null) {
             currentUser.setFirstName(newFirstName);
@@ -121,6 +121,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             currentUser.setNotLocked(isNonLocked);
             currentUser.setRole(getRoleEnumName(role).name());
             currentUser.setAuthorities(getRoleEnumName(role).getAuthorities());
+            if (StringUtils.isNotBlank(supId))
+                currentUser.setSupId(supId);
             userRepository.save(currentUser);
             return currentUser;
         }
@@ -149,40 +151,50 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<UserResponse> getUserResponse() {
         List<UserResponse> userResponses = new ArrayList<>();
         List<AppUser> appUsers = getUsers();
-        appUsers.forEach(appUser -> {
-            UserResponse userResponse = new UserResponse();
-            userResponse.setUserId(appUser.getUserId());
-            userResponse.setFirstName(appUser.getFirstName());
-            userResponse.setLastName(appUser.getLastName());
-            userResponse.setUsername(appUser.getUsername());
-            userResponse.setLastLoginDate(appUser.getLastLoginDate());
-            userResponse.setJoinDate(appUser.getJoinDate());
-            userResponse.setRole(appUser.getRole());
-            userResponse.setAuthorities(appUser.getAuthorities());
-            userResponse.setSupId(appUser.getSupId());
-            userResponse.setActive(appUser.isActive());
-            userResponse.setNotLocked(appUser.isNotLocked());
-            userResponse.setThemeId(appUser.getThemeId());
-            if (appUser.getRole().equals(ROLE_USER.name())){
-                List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
-                simpleUserResponses.add(findSimpleUserResponseByUserId(userResponse.getSupId()));
-                userResponse.setSimpleUserResponses(simpleUserResponses);
-            }
-            if(appUser.getRole().equals(ROLE_SUPERVISOR.name())) {
-                List<AppUser> appUserList = userRepository.findAllAppUsersBySupId(appUser.getUserId());
-                List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
-                appUserList.forEach(appUser1 -> {
-                    SimpleUserResponse simpleUserResponse = new SimpleUserResponse();
-                    simpleUserResponse.setFirstName(appUser1.getFirstName());
-                    simpleUserResponse.setLastName(appUser1.getLastName());
-                    simpleUserResponse.setThemeId(appUser1.getThemeId());
-                    simpleUserResponses.add(simpleUserResponse);
-                });
-                userResponse.setSimpleUserResponses(simpleUserResponses);
-            }
-            userResponses.add(userResponse);
-        });
-        return userResponses;
+        if (!appUsers.isEmpty()) {
+            appUsers.forEach(appUser -> {
+                LOGGER.info("Size : {}",appUsers.size());
+                LOGGER.info("LastName : {}",appUser.getLastName());
+            });
+            appUsers.forEach(appUser -> {
+                UserResponse userResponse = new UserResponse();
+                userResponse.setUserId(appUser.getUserId());
+                userResponse.setFirstName(appUser.getFirstName());
+                userResponse.setLastName(appUser.getLastName());
+                userResponse.setUsername(appUser.getUsername());
+                userResponse.setLastLoginDate(appUser.getLastLoginDate());
+                userResponse.setJoinDate(appUser.getJoinDate());
+                userResponse.setRole(appUser.getRole());
+                userResponse.setAuthorities(appUser.getAuthorities());
+                userResponse.setSupId(appUser.getSupId());
+                userResponse.setActive(appUser.isActive());
+                userResponse.setNotLocked(appUser.isNotLocked());
+                userResponse.setThemeId(appUser.getThemeId());
+                if (appUser.getRole().equals(ROLE_USER.name())){
+                    List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
+                    simpleUserResponses.add(findSimpleUserResponseByUserId(userResponse.getSupId()));
+                    userResponse.setSimpleUserResponses(simpleUserResponses);
+                }
+                if(appUser.getRole().equals(ROLE_SUPERVISOR.name())) {
+                    List<AppUser> appUserList = userRepository.findAllAppUsersBySupId(appUser.getUserId());
+                    List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
+                    appUserList.forEach(appUser1 -> {
+                        SimpleUserResponse simpleUserResponse = new SimpleUserResponse();
+                        simpleUserResponse.setFirstName(appUser1.getFirstName());
+                        simpleUserResponse.setLastName(appUser1.getLastName());
+                        simpleUserResponse.setThemeId(appUser1.getThemeId());
+                        simpleUserResponses.add(simpleUserResponse);
+                    });
+                    userResponse.setSimpleUserResponses(simpleUserResponses);
+                }
+                userResponses.add(userResponse);
+            });
+            return userResponses;
+        }else {
+            LOGGER.info("No users found ");
+            return userResponses;
+        }
+
     }
 
     @Override
