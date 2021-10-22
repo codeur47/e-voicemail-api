@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class CustomerRequest {
+    private Long id;
     private String lastName;
     private String firstName;
     private String phoneNumber;

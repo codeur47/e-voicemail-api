@@ -9,5 +9,12 @@ import java.util.List;
 
 public interface CustomerService {
     Customer create(String firstName, String lastName, String phoneNumber) throws BlankValueException, CustomerFoundException, PhoneNumberExistException;
+
     List<Customer> findAll();
+
+    void deleteCustomer(Long id) throws BlankValueException, CustomerFoundException;
+
+    Customer findById(Long id) throws CustomerFoundException;
+
+    Customer update(Long id,String firstName, String lastName, String phoneNumber) throws BlankValueException, CustomerFoundException;
 }
