@@ -266,17 +266,4 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    private List<SimpleUserResponse> findSimpleUserResponsesByUserId(String userId) {
-        List<AppUser> appUsers = userRepository.findAllByUserId(userId);
-        List<SimpleUserResponse> simpleUserResponses = new ArrayList<>();
-        appUsers.forEach(appUser -> {
-            SimpleUserResponse simpleUserResponse = new SimpleUserResponse();
-            simpleUserResponse.setLastName(appUser.getLastName());
-            simpleUserResponse.setFirstName(appUser.getFirstName());
-            simpleUserResponse.setThemeId(appUser.getThemeId());
-            simpleUserResponses.add(simpleUserResponse);
-        });
-        return  simpleUserResponses;
-    }
-
 }

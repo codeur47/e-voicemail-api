@@ -1,8 +1,7 @@
 package com.yorosoft.evoicemailapi.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.yorosoft.evoicemailapi.exception.domain.UserNotFoundException;
-import com.yorosoft.evoicemailapi.exception.domain.UsernameExistException;
+import com.yorosoft.evoicemailapi.exception.domain.*;
 import com.yorosoft.evoicemailapi.utility.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +65,27 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<HttpResponse> usernameExistException(UsernameExistException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
+
+    @ExceptionHandler(PhoneNumberExistException.class)
+    public ResponseEntity<HttpResponse> phoneNumberExistException(PhoneNumberExistException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(BlankValueException.class)
+    public ResponseEntity<HttpResponse> blankValueException(BlankValueException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(CustomerFoundException.class)
+    public ResponseEntity<HttpResponse> customerFoundException(CustomerFoundException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<HttpResponse> userNotFoundException(CustomerNotFoundException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<HttpResponse> userNotFoundException(UserNotFoundException exception) {
